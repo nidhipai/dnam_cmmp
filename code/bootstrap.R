@@ -1,7 +1,6 @@
 # Get bootstrap standard error of estimates in real data
 
 # Root folder of project
-setwd("/panfs/jay/groups/23/murra484/pai00032/dnam_cluster/dnam_prediction")
 
 source("code/preliminaries.R")
 source("code/cmmp_functions.R")
