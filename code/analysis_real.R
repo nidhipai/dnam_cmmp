@@ -258,6 +258,67 @@ r2_plot <- t(r2_lme4) %>%
 
 ggsave("images/r2_plot.png", r2_plot, height = 3, width = 4, dpi = 800)  
 
+# Analyze bootstrapped results ------------------------------------------------
+
+# Collect results
+# Compile individual simulation results & move indiv ones to archive 
+
+rds_files <- list.files(path = "bootstrap_res", pattern = "\\.RDS$", full.names = TRUE)
+
+indiv_dfs <- list() # df from each one
+# Loop over each file, read it, and append it to the list
+for (f in 1:length(rds_files)) {
+  df <- readRDS(rds_files[f])
+  indiv_dfs[[length(indiv_dfs) + 1]] <- df
+}
+full_bs_results <- do.call(rbind, indiv_dfs)
+saveRDS(full_bs_results, "bootstrap_results/bs_all_methods_fixed.RDS")
+
+# Plots
+bootstrap_boxplot <- full_bs_results %>%
+  filter(metric == "mse") %>%
+  mutate(method = fct_recode(method, "k-means + CMMP" = "k_cmmp", "Regression pred." = "reg_pred",
+                             "Naive y" = "bar_y")) %>%
+  ggplot(aes(y = value, x = method, fill = method)) +
+  geom_boxplot() +
+  theme_bw() +
+  guides(fill = "none") +
+  labs(x = "Method", y = "MSE")
+ggsave("images/bootstrap_boxplot.png", bootstrap_boxplot,
+       height = 4.5, width = 6, dpi = 800)
+
+full_bs_results %>%
+  filter(metric == "mse") %>%
+  mutate(method = fct_recode(method, "k-means + CMMP" = "k_cmmp", "Regression pred." = "reg_pred",
+                             "Naive y" = "bar_y")) %>%
+  group_by(method) %>%
+  summarize(median = median(value),
+            iqr = IQR(value))
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
